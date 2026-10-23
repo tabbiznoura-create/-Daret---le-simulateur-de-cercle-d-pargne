@@ -189,6 +189,10 @@ participantsListe.addEventListener("click", (event)=> {
 
 //^^^^^^^---------------US-02 - Ajouter des participants -------------
 
+
+
+
+
 formulaire.addEventListener("submit", function (event) {
   event.preventDefault();
 
@@ -222,8 +226,88 @@ formulaire.addEventListener("submit", function (event) {
       noms.push(nom);
       input.removeAttribute("aria-invalid");
     }
+
+    const dateDebut = date.value
+    const choixPeriodicite = periodicite.value
+
+    for (let i = 0; i < nombreParticipants; i++) {
+      const dateTour = calculerDateTour(
+        dateDebut,
+        choixPeriodicite,
+        i
+      )
+
+       console.log(dateTour)
+    }
+
   }
 
   erreurParticipants.textContent = "";
   erreurParticipants.classList.add("hidden");
-});
+
+  const montant = Number(cotisation.value)
+
+const nombreParticipants =
+  participantsListe.querySelectorAll("input").length;
+
+const nombreTour = participantsListe.querySelectorAll("input").length
+
+const montantBeneficiaire = calculerMontant(
+  montant,
+ nombreParticipants)
+
+  const totalParticipant = calculerTotalParticipant(
+    montant,
+    nombreParticipants
+  )
+
+  //  Afficher les résultats
+
+  resumeCagnotte.textContent = montantBeneficiaire + " MAD"
+  resumeTotalCycle.textContent = totalParticipant + " MAD"
+  resumeNbTours.textContent = nombreParticipants
+
+  etatVide.classList.add("hidden")
+  contenuResultat.classList.remove("hidden")
+
+
+})
+
+
+// ------------------------us-03------------------------------
+
+const etatVide = document.querySelector("#etat-vide")
+const contenuResultat = document.querySelector("#contenu-resultat")
+
+const resumeCagnotte = document.querySelector("#resume-cagnotte")
+const resumeTotalCycle = document.querySelector("#resume-total-cycle")
+
+const resumeNbTours = document.querySelector("#resume-nb-tours")
+const resumeDates = document.querySelector("#resume-dates")
+
+
+function calculerMontant(cotisation, nombreParticipants) {
+  return cotisation * nombreParticipants
+}
+
+
+function calculerTotalParticipant(cotisation, nombreTours) {
+  return cotisation * nombreTours
+}
+
+
+
+
+function calculerDateTour(dateDebut, periodicite, numeroTour) {
+  date = new Date(dateDebut)
+
+  if (periodicite === "hebdomadaire") {
+    date.setDate(date.getDate() + numeroTour * 7)
+  }else if (periodicite === "quinzaine"){
+    date.setDate(date.getDate() + numeroTour * 15)
+  } else if (periodicite === "mensuelle") {
+    date.setMonth(date.getMonth() + numeroTour)
+  }
+
+  return date
+}
