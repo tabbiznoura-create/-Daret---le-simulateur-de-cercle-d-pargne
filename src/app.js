@@ -25,6 +25,11 @@ const aujourdHui = new Date().toLocaleDateString("sv-SE");
 
 date.min = aujourdHui;
 
+// --------------------- Calendrier ---------------------
+
+const calendrierCorps = document.querySelector("#calendrier-corps");
+const compteurTours = document.querySelector("#compteur-tours");
+
 // -------------------- Participants --------------------
 
 const participantsListe = document.querySelector("#participants-liste");
@@ -125,7 +130,7 @@ function calculerDateTour(dateDebut, periodicite, numeroTour) {
   if (periodicite === "hebdomadaire") {
     dateTour.setDate(dateTour.getDate() + numeroTour * 7);
   } else if (periodicite === "quinzaine") {
-    dateTour.setDate(dateTour.getDate() + numeroTour * 15);
+    dateTour.setDate(dateTour.getDate() + numeroTour * 14);
   } else if (periodicite === "mensuelle") {
     const jour = dateTour.getDate();
     dateTour.setDate(1);
@@ -143,7 +148,7 @@ function calculerDateTour(dateDebut, periodicite, numeroTour) {
   return dateTour;
 }
 
-// -------------------- UN SEUL SUBMIT --------------------
+// -------------------- SUBMIT --------------------
 
 formulaire.addEventListener("submit", function (event) {
   event.preventDefault();
@@ -168,6 +173,77 @@ formulaire.addEventListener("submit", function (event) {
     elementErreur.classList.add("hidden");
     champ.removeAttribute("aria-invalid");
   }
+
+
+  function genererCalendrier(participants, dateDebut, periodicite, cotisation) {
+  calendrierCorps.replaceChildren();
+
+  participants.forEach(function (participant, index) {
+    const ligne = document.createElement("tr");
+
+    const dateTour = new Date(dateDebut);
+
+    if (periodicite === "hebdomadaire") {
+      dateTour.setDate(dateTour.getDate() + index * 7);
+    } else if (periodicite === "quinzaine") {
+      dateTour.setDate(dateTour.getDate() + index * 14);
+    } else if (periodicite === "mensuelle") {
+      const jour = dateTour.getDate();
+
+      dateTour.setDate(1);
+      dateTour.setMonth(dateTour.getMonth() + index);
+
+      const dernierJour = new Date(
+        dateTour.getFullYear(),
+        dateTour.getMonth() + 1,
+        0
+      ).getDate();
+
+      dateTour.setDate(Math.min(jour, dernierJour));
+    }
+
+    const dateFormatee = dateTour.toLocaleDateString("fr-FR", {
+      day: "numeric",
+      month: "long",
+      year: "numeric"
+    });
+
+    const valeurs = [
+      index + 1,
+      dateFormatee,
+      participant,
+      cotisation * participants.length + " MAD",
+      "À venir"
+    ];
+
+    valeurs.forEach(function (valeur) {
+      const cellule = document.createElement("td");
+      cellule.classList.add("px-4", "py-3");
+      cellule.textContent = valeur;
+      ligne.append(cellule);
+    });
+
+    calendrierCorps.append(ligne);
+  });
+
+  compteurTours.textContent = participants.length + " tours";
+}
+
+
+
+const participants = Array.from(
+  participantsListe.querySelectorAll("input"),
+  function (input) {
+    return input.value.trim();
+  }
+);
+
+genererCalendrier(
+  participants,
+  date.value,
+  periodicite.value,
+  Number(cotisation.value)
+);
 
   // 1. Vérifier le nom du cercle
   const nom = nomCercle.value.trim();
@@ -322,3 +398,7 @@ formulaire.addEventListener("submit", function (event) {
   etatVide.classList.add("hidden");
   contenuResultat.classList.remove("hidden");
 });
+
+// 8. Générer le calndier des tours
+
+
