@@ -1,201 +1,236 @@
+
+const formulaire = document.querySelector("#daret-form");
+
+// -------------------- Nom du cercle --------------------
+
 const nomCercle = document.querySelector("#nom-cercle");
 const erreurNom = document.querySelector("#nom-cercle-erreur");
 const regexNom = /^[A-Za-zÀ-ÖØ-öø-ÿ0-9 -]+$/;
-const formulaire = document.querySelector("#daret-form");
 
-formulaire.addEventListener("submit", function (event) {
-  event.preventDefault();
-
-  const nom = nomCercle.value.trim();
-
-  if (nom.length < 3 || nom.length > 40 || !regexNom.test(nom)) {
-    erreurNom.textContent =
-      "Le nom doit contenir entre 3 et 40 caractères et ne doit pas contenir de caractères spéciaux (@, #, etc.).";
-    erreurNom.classList.remove("hidden");
-    nomCercle.setAttribute("aria-invalid", "true");
-  } else {
-    erreurNom.textContent = "";
-    erreurNom.classList.add("hidden");
-    erreurNom.removeAttribute("aria-invalid");
-  }
-});
+// -------------------- Cotisation --------------------
 
 const cotisation = document.querySelector("#cotisation");
 const erreurCotisation = document.querySelector("#cotisation-erreur");
 
-formulaire.addEventListener("submit", function (event) {
-  event.preventDefault();
-
-  const montant = Number(cotisation.value);
-
-  if (montant < 100 || montant > 50000 || !Number.isInteger(montant)) {
-    erreurCotisation.textContent =
-      "La montant doit être supérieure à 100 MAD et inférieure à 50 000 MAD, sans décimales.";
-    erreurCotisation.classList.remove("hidden");
-    cotisation.setAttribute("aria-invalid", "true");
-  } else {
-    erreurCotisation.textContent = "";
-    erreurCotisation.classList.add("hidden");
-    erreurCotisation.removeAttribute("aria-invalid");
-  }
-});
+// -------------------- Périodicité --------------------
 
 const periodicite = document.querySelector("#periodicite");
 const erreurPeriodicite = document.querySelector("#periodicite-erreur");
 
-formulaire.addEventListener("submit", function (event) {
-  event.preventDefault();
-
-  const choix = periodicite.value;
-
-  if (
-    choix !== "hebdomadaire" &&
-    choix !== "quinzaine" &&
-    choix !== "mensuelle"
-  ) {
-    erreurPeriodicite.textContent = "Est invalide.";
-    erreurPeriodicite.classList.remove("hidden");
-    periodicite.setAttribute("aria-invalid", "true");
-  } else {
-    erreurPeriodicite.textContent = "";
-    erreurPeriodicite.classList.add("hidden");
-    erreurPeriodicite.removeAttribute("aria-invalid");
-  }
-});
-
-// ---------------------Date de début -------------------------------
+// -------------------- Date de début --------------------
 
 const date = document.querySelector("#date-debut");
 const erreurDate = document.querySelector("#date-debut-erreur");
 const aujourdHui = new Date().toLocaleDateString("sv-SE");
+
 date.min = aujourdHui;
 
-formulaire.addEventListener("submit", function (event) {
-  event.preventDefault();
-
-  if (date.value === "" || date.value < aujourdHui) {
-    erreurDate.textContent =
-      "La date de début doit être aujourd'hui ou une date ultérieure.";
-    erreurDate.classList.remove("hidden");
-    date.setAttribute("aria-invalid", "true");
-  } else {
-    erreurDate.textContent = "";
-    erreurDate.classList.add("hidden");
-    erreurDate.removeAttribute("aria-invalid");
-  }
-});
-
-// ---------------------Participants -------------------------------
+// -------------------- Participants --------------------
 
 const participantsListe = document.querySelector("#participants-liste");
 const participantsAjouter = document.querySelector("#ajouter-participant");
-
 const erreurParticipants = document.querySelector("#participants-erreur");
+const compteurParticipants = document.querySelector("#participants-compteur");
 const regexParticipant = /^[A-Za-zÀ-ÖØ-öø-ÿ' -]+$/;
 
+function actualiserCompteur() {
+  compteurParticipants.textContent =
+    participantsListe.children.length + " participants";
+}
 
-const compteurParticipants = document.querySelector("#participants-compteur")
+function actualiserRetirer() {
+  const boutons = participantsListe.querySelectorAll("button");
 
-  function actualiserCompteur() {
-    compteurParticipants.textContent =
-      participantsListe.children.length + " participants";
-  }
+  boutons.forEach((btn) => {
+    if (participantsListe.children.length <= 2) {
+      btn.classList.add("hidden");
+    } else {
+      btn.classList.remove("hidden");
+    }
+  });
+}
 
+function creerParticipant() {
+  const li = document.createElement("li");
+  const input = document.createElement("input");
+  const btn = document.createElement("button");
+
+  input.type = "text";
+  input.placeholder = "Nom du participant";
+
+  btn.type = "button";
+  btn.textContent = "Retirer";
+
+  li.append(input, btn);
+  participantsListe.append(li);
+}
+
+// Créer les 3 participants de départ
+for (let i = 0; i < 3; i++) {
+  creerParticipant();
+}
+
+actualiserRetirer();
+actualiserCompteur();
+
+// Ajouter un participant
 participantsAjouter.addEventListener("click", function (event) {
   event.preventDefault();
 
   if (participantsListe.children.length >= 20) {
-    erreurParticipants.textContent = "La liste est plein !.";
+    erreurParticipants.textContent =
+      "Le nombre maximum de participants est 20.";
     erreurParticipants.classList.remove("hidden");
     return;
   }
 
-  const li = document.createElement("li");
-  const btn = document.createElement("button");
-  const input = document.createElement("input");
+  creerParticipant();
+  actualiserRetirer();
+  actualiserCompteur();
+});
 
-
-
-  input.type = "text";
-  input.placeholder = "Nom du participant";
-
-  btn.type = "button";
-  btn.textContent = "Retirer";
-
-  li.append(input, btn);
-  participantsListe.append(li);
-  actualiserRetirer()
-  actualiserCompteur()
-})
-
-
-//---------------US-02 - Ajouter des participants -------------
-
-for (let i = 0; i < 3; i++) {
-  const li = document.createElement("li");
-  const btn = document.createElement("button");
-  const input = document.createElement("input");
-
-  input.type = "text";
-  input.placeholder = "Nom du participant";
-
-  btn.type = "button";
-  btn.textContent = "Retirer";
-
-  li.append(input, btn);
-  participantsListe.append(li);
-}
-
-
-
-
-function actualiserRetirer(){
-const boutons = participantsListe.querySelectorAll("button")
-boutons.forEach((btn) => {
-  if(participantsListe.children.length <= 2){
-    btn.classList.add("hidden")
-  } else {
-    btn.classList.remove("hidden")
-  }})
-}
-actualiserRetirer()
-actualiserCompteur()
-
-
-
-
-
-participantsListe.addEventListener("click", (event)=> {
-
+// Retirer un participant avec la délégation d'événement
+participantsListe.addEventListener("click", function (event) {
   if (event.target.tagName === "BUTTON") {
-        if (participantsListe.children.length > 2) {
-            event.target.parentElement.remove()
-            actualiserCompteur()
-            actualiserRetirer()
-        }
+    if (participantsListe.children.length > 2) {
+      event.target.parentElement.remove();
+      actualiserRetirer();
+      actualiserCompteur();
     }
-})
+  }
+});
 
+// -------------------- US-03 : Résultats --------------------
 
-  
+const etatVide = document.querySelector("#etat-vide");
+const contenuResultat = document.querySelector("#contenu-resultat");
 
+const resumeCagnotte = document.querySelector("#resume-cagnotte");
+const resumeTotalCycle = document.querySelector("#resume-total-cycle");
+const resumeNbTours = document.querySelector("#resume-nb-tours");
+const resumeDates = document.querySelector("#resume-dates");
 
+// Fonctions de calcul
+function calculerMontant(cotisation, nombreParticipants) {
+  return cotisation * nombreParticipants;
+}
 
+function calculerTotalParticipant(cotisation, nombreTours) {
+  return cotisation * nombreTours;
+}
 
+function calculerDateTour(dateDebut, periodicite, numeroTour) {
+  const dateTour = new Date(dateDebut);
 
+  if (periodicite === "hebdomadaire") {
+    dateTour.setDate(dateTour.getDate() + numeroTour * 7);
+  } else if (periodicite === "quinzaine") {
+    dateTour.setDate(dateTour.getDate() + numeroTour * 15);
+  } else if (periodicite === "mensuelle") {
+    const jour = dateTour.getDate();
+    dateTour.setDate(1);
+    dateTour.setMonth(dateTour.getMonth() + numeroTour);
 
+    const dernierJour = new Date(
+      dateTour.getFullYear(),
+      dateTour.getMonth() + 1,
+      0
+    ).getDate();
 
+    dateTour.setDate(Math.min(jour, dernierJour));
+  }
 
+  return dateTour;
+}
 
-//^^^^^^^---------------US-02 - Ajouter des participants -------------
-
-
-
-
+// -------------------- UN SEUL SUBMIT --------------------
 
 formulaire.addEventListener("submit", function (event) {
   event.preventDefault();
 
+  let valide = true;
+  let premierChampInvalide = null;
+
+  function afficherErreur(champ, elementErreur, message) {
+    elementErreur.textContent = message;
+    elementErreur.classList.remove("hidden");
+    champ.setAttribute("aria-invalid", "true");
+
+    if (!premierChampInvalide) {
+      premierChampInvalide = champ;
+    }
+
+    valide = false;
+  }
+
+  function effacerErreur(champ, elementErreur) {
+    elementErreur.textContent = "";
+    elementErreur.classList.add("hidden");
+    champ.removeAttribute("aria-invalid");
+  }
+
+  // 1. Vérifier le nom du cercle
+  const nom = nomCercle.value.trim();
+
+  if (
+    nom.length < 3 ||
+    nom.length > 40 ||
+    !regexNom.test(nom)
+  ) {
+    afficherErreur(
+      nomCercle,
+      erreurNom,
+      "Le nom doit contenir entre 3 et 40 caractères, sans caractères spéciaux."
+    );
+  } else {
+    effacerErreur(nomCercle, erreurNom);
+  }
+
+  // 2. Vérifier la cotisation
+  const montant = Number(cotisation.value);
+
+  if (
+    cotisation.value.trim() === "" ||
+    montant < 100 ||
+    montant > 50000 ||
+    !Number.isInteger(montant)
+  ) {
+    afficherErreur(
+      cotisation,
+      erreurCotisation,
+      "La cotisation doit être un entier entre 100 et 50 000 MAD."
+    );
+  } else {
+    effacerErreur(cotisation, erreurCotisation);
+  }
+
+  // 3. Vérifier la périodicité
+  if (
+    !["hebdomadaire", "quinzaine", "mensuelle"].includes(
+      periodicite.value
+    )
+  ) {
+    afficherErreur(
+      periodicite,
+      erreurPeriodicite,
+      "Veuillez choisir une périodicité valide."
+    );
+  } else {
+    effacerErreur(periodicite, erreurPeriodicite);
+  }
+
+  // 4. Vérifier la date
+  if (date.value === "" || date.value < aujourdHui) {
+    afficherErreur(
+      date,
+      erreurDate,
+      "La date doit être aujourd'hui ou une date ultérieure."
+    );
+  } else {
+    effacerErreur(date, erreurDate);
+  }
+
+  // 5. Vérifier les participants
   const inputs = participantsListe.querySelectorAll("input");
   const noms = [];
 
@@ -203,111 +238,87 @@ formulaire.addEventListener("submit", function (event) {
     erreurParticipants.textContent =
       "Le nombre de participants doit être entre 2 et 20.";
     erreurParticipants.classList.remove("hidden");
-    inputs[0]?.focus();
-    return;
+    valide = false;
+
+    if (!premierChampInvalide) {
+      premierChampInvalide = inputs[0] || participantsAjouter;
+    }
+  } else {
+    for (const input of inputs) {
+      const nomParticipant = input.value.trim().toLowerCase();
+
+      if (
+        nomParticipant.length < 2 ||
+        nomParticipant.length > 30 ||
+        !regexParticipant.test(nomParticipant) ||
+        noms.includes(nomParticipant)
+      ) {
+        erreurParticipants.textContent =
+          "Prénom invalide ou déjà utilisé. Vérifiez les noms des participants.";
+        erreurParticipants.classList.remove("hidden");
+        input.setAttribute("aria-invalid", "true");
+        input.setAttribute("aria-describedby", "participants-erreur");
+
+        if (!premierChampInvalide) {
+          premierChampInvalide = input;
+        }
+
+        valide = false;
+      } else {
+        noms.push(nomParticipant);
+        input.removeAttribute("aria-invalid");
+        input.removeAttribute("aria-describedby");
+      }
+    }
   }
-  for (const input of inputs) {
-    const nom = input.value.trim().toLowerCase();
 
-    if (
-      nom.length < 2 ||
-      nom.length > 30 ||
-      !regexParticipant.test(nom) ||
-      noms.includes(nom)
-    ) {
-      erreurParticipants.textContent =
-        "Prénom invalide ou déjà utilisé. Le prénom doit contenir entre 2 et 30 caractères, sans chiffres ni caractères spéciaux. Veuillez corriger le prénom et réessayer.";
-      erreurParticipants.classList.remove("hidden");
-      input.setAttribute("aria-invalid", "true");
-      input.setAttribute("aria-describedby", "participants-erreur");
-      input.focus();
-      return;
-    } else {
-      noms.push(nom);
-      input.removeAttribute("aria-invalid");
-    }
-
-    const dateDebut = date.value
-    const choixPeriodicite = periodicite.value
-
-    for (let i = 0; i < nombreParticipants; i++) {
-      const dateTour = calculerDateTour(
-        dateDebut,
-        choixPeriodicite,
-        i
-      )
-
-       console.log(dateTour)
-    }
-
+  // Arrêter si un champ est invalide
+  if (!valide) {
+    contenuResultat.classList.add("hidden");
+    etatVide.classList.remove("hidden");
+    premierChampInvalide?.focus();
+    return;
   }
 
   erreurParticipants.textContent = "";
   erreurParticipants.classList.add("hidden");
 
-  const montant = Number(cotisation.value)
+  // 6. Calculer les montants et le nombre de tours
+  const nombreParticipants = inputs.length;
 
-const nombreParticipants =
-  participantsListe.querySelectorAll("input").length;
-
-const nombreTour = participantsListe.querySelectorAll("input").length
-
-const montantBeneficiaire = calculerMontant(
-  montant,
- nombreParticipants)
+  const montantBeneficiaire = calculerMontant(
+    montant,
+    nombreParticipants
+  );
 
   const totalParticipant = calculerTotalParticipant(
     montant,
     nombreParticipants
-  )
+  );
 
-  //  Afficher les résultats
+  resumeCagnotte.textContent = montantBeneficiaire + " MAD";
+  resumeTotalCycle.textContent = totalParticipant + " MAD";
+  resumeNbTours.textContent = nombreParticipants;
 
-  resumeCagnotte.textContent = montantBeneficiaire + " MAD"
-  resumeTotalCycle.textContent = totalParticipant + " MAD"
-  resumeNbTours.textContent = nombreParticipants
+  // 7. Calculer la première et la dernière date
+  const datePremierTour = calculerDateTour(
+    date.value,
+    periodicite.value,
+    0
+  );
 
-  etatVide.classList.add("hidden")
-  contenuResultat.classList.remove("hidden")
+  const dateDernierTour = calculerDateTour(
+    date.value,
+    periodicite.value,
+    nombreParticipants - 1
+  );
 
+  resumeDates.textContent =
+    datePremierTour.toLocaleDateString("fr-FR") +
+    " - " +
+    dateDernierTour.toLocaleDateString("fr-FR");
 
-})
-
-
-// ------------------------us-03------------------------------
-
-const etatVide = document.querySelector("#etat-vide")
-const contenuResultat = document.querySelector("#contenu-resultat")
-
-const resumeCagnotte = document.querySelector("#resume-cagnotte")
-const resumeTotalCycle = document.querySelector("#resume-total-cycle")
-
-const resumeNbTours = document.querySelector("#resume-nb-tours")
-const resumeDates = document.querySelector("#resume-dates")
-
-
-function calculerMontant(cotisation, nombreParticipants) {
-  return cotisation * nombreParticipants
-}
-
-
-function calculerTotalParticipant(cotisation, nombreTours) {
-  return cotisation * nombreTours
-}
-
-
-
-
-function calculerDateTour(dateDebut, periodicite, numeroTour) {
-  date = new Date(dateDebut)
-
-  if (periodicite === "hebdomadaire") {
-    date.setDate(date.getDate() + numeroTour * 7)
-  }else if (periodicite === "quinzaine"){
-    date.setDate(date.getDate() + numeroTour * 15)
-  } else if (periodicite === "mensuelle") {
-    date.setMonth(date.getMonth() + numeroTour)
-  }
-
-  return date
-}
+  // 8. Afficher les résultats
+  etatVide.classList.add("hidden");
+  contenuResultat.classList.remove("hidden");
+});
