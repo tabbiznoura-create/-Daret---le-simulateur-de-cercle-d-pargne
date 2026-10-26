@@ -15,20 +15,20 @@ const periodicite = document.querySelector("#periodicite");
 const erreurPeriodicite = document.querySelector("#periodicite-erreur");
 
 // Date
-const date = document.querySelector("#date-debut");
-const erreurDate = document.querySelector("#date-debut-erreur");
-const aujourdHui = new Date().toLocaleDateString("sv-SE");
+const date = document.querySelector("#date-debut")
+const erreurDate = document.querySelector("#date-debut-erreur")
+const aujourdHui = new Date().toLocaleDateString("sv-SE")
 date.min = aujourdHui;
 
 // Calendrier
-const calendrierCorps = document.querySelector("#calendrier-corps");
-const compteurTours = document.querySelector("#compteur-tours");
+const calendrierCorps = document.querySelector("#calendrier-corps")
+const compteurTours = document.querySelector("#compteur-tours")
 
 // Participants
-const participantsListe = document.querySelector("#participants-liste");
-const participantsAjouter = document.querySelector("#ajouter-participant");
-const erreurParticipants = document.querySelector("#participants-erreur");
-const compteurParticipants = document.querySelector("#participants-compteur");
+const participantsListe = document.querySelector("#participants-liste")
+const participantsAjouter = document.querySelector("#ajouter-participant")
+const erreurParticipants = document.querySelector("#participants-erreur")
+const compteurParticipants = document.querySelector("#participants-compteur")
 const regexParticipant = /^[A-Za-zÀ-ÖØ-öø-ÿ' -]+$/;
 
 // US-05 : Ordre des tours
@@ -350,8 +350,8 @@ formulaire.addEventListener("submit", function (event) {
     nombreParticipants
   );
 
-  resumeCagnotte.textContent = montantBeneficiaire + " MAD";
-  resumeTotalCycle.textContent = totalParticipant + " MAD";
+  resumeCagnotte.textContent = montantBeneficiaire + " MAD"
+  resumeTotalCycle.textContent = totalParticipant + " MAD"
   resumeNbTours.textContent = nombreParticipants;
 
   // 7. Calculer la première et la dernière date
@@ -370,24 +370,24 @@ formulaire.addEventListener("submit", function (event) {
   resumeDates.textContent =
     datePremierTour.toLocaleDateString("fr-FR") +
     " - " +
-    dateDernierTour.toLocaleDateString("fr-FR");
+    dateDernierTour.toLocaleDateString("fr-FR")
 
   // 8. Afficher les résultats
   etatVide.classList.add("hidden");
-  contenuResultat.classList.remove("hidden");
+  contenuResultat.classList.remove("hidden")
 });
 
 // US-05 : Tirage au sort
 boutonTirage.addEventListener("click", function () {
   if (!configurationCalendrier || participantsOriginaux.length === 0) {
-    return;
+    return
   }
 
   const participantsMelanges = [...participantsOriginaux];
 
   // Mélange équitable : Fisher-Yates
   for (let i = participantsMelanges.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
+    const j = Math.floor(Math.random() * (i + 1))
 
     [participantsMelanges[i], participantsMelanges[j]] = [
       participantsMelanges[j],
@@ -400,13 +400,13 @@ boutonTirage.addEventListener("click", function () {
     configurationCalendrier.dateDebut,
     configurationCalendrier.periodicite,
     configurationCalendrier.cotisation
-  );
-});
+  )
+})
 
 // US-05 : Revenir à l'ordre de saisie
 boutonOrdreSaisie.addEventListener("click", function () {
   if (!configurationCalendrier || participantsOriginaux.length === 0) {
-    return;
+    return
   }
 
   genererCalendrier(
@@ -414,5 +414,5 @@ boutonOrdreSaisie.addEventListener("click", function () {
     configurationCalendrier.dateDebut,
     configurationCalendrier.periodicite,
     configurationCalendrier.cotisation
-  );
-});
+  )
+})
